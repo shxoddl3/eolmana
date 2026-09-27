@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>축의금 얼마 낼까 - 관계·참석·동반자별 적정 축의금 계산기</title>
+<meta name="description" content="친구, 직장 동료, 상사, 친척까지. 관계와 참석 여부, 동반자, 식장에 맞는 적정 축의금과 그 이유를 알려드려요.">
+<meta property="og:title" content="축의금 얼마 낼까? 이유까지 알려주는 축의금 계산기">
+<meta property="og:description" content="관계, 참석 여부, 동반자, 식장을 고르면 적정 금액과 이유를 알려드려요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F6F2; --surface:#FFFFFF; --ink:#1D2922; --muted:#5E6B63; --line:#D6DFD8;
+  --accent:#1F7A5A; --accent-ink:#FFFFFF; --soft:#E3F1E8; --warn:#B4452F;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121814; --surface:#1B231E; --ink:#E6EEE9; --muted:#9BAAA1; --line:#2C3830;
+    --accent:#4FC08D; --accent-ink:#0E1A13; --soft:#1F3328; --warn:#F08A72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121814; --surface:#1B231E; --ink:#E6EEE9; --muted:#9BAAA1; --line:#2C3830;
+  --accent:#4FC08D; --accent-ink:#0E1A13; --soft:#1F3328; --warn:#F08A72;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word}
+.wrap{max-width:820px;margin:0 auto;padding:28px 20px 64px}
+.site{font-size:14px;color:var(--muted);font-weight:500;margin:0 0 20px}
+h1{font-family:"Gowun Batang",serif;font-weight:700;font-size:clamp(32px,6.5vw,54px);line-height:1.25;margin:0}
+.lead{color:var(--muted);margin:12px 0 0;max-width:60ch}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.q{margin-top:26px}
+.q h2{font-size:16px;margin:0 0 8px}
+.q small{color:var(--muted);font-weight:400;margin-left:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:15px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row input[type=number]{font:inherit;width:110px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.chk{display:flex;gap:10px;align-items:flex-start;cursor:pointer;max-width:62ch}
+.chk input{margin-top:5px;width:18px;height:18px;accent-color:var(--accent)}
+.result{margin-top:40px;padding:26px 22px;background:var(--surface);border-radius:18px;border:2px solid var(--ink)}
+.result .for{margin:0;color:var(--muted);font-size:15px}
+.amt{font-family:"Gowun Batang",serif;font-weight:700;font-size:clamp(48px,11vw,80px);line-height:1.1;margin:6px 0 0;color:var(--accent)}
+.alt{margin:8px 0 0;color:var(--muted)}
+.why{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
+.why h3{font-size:16px;margin:0 0 10px}
+.why ol{margin:0;padding-left:20px}
+.why li{margin-bottom:10px}
+.why li b{display:block}
+.why li span{color:var(--muted);font-size:15px}
+.warn{margin-top:16px;padding:12px 14px;border-radius:10px;border:1px solid var(--warn);color:var(--ink);font-size:15px}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.links a{font-size:14px;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px}
+section{margin-top:48px}
+section h2{font-size:20px;margin:0 0 10px}
+.stats{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.stat{background:var(--surface);border-radius:14px;padding:16px;border:1px solid var(--line)}
+.stat b{font-family:"Gowun Batang",serif;font-size:28px;color:var(--accent);display:block}
+.stat p{margin:4px 0 0;font-size:14px}
+.stat small{display:block;color:var(--muted);font-size:12px;margin-top:6px}
+.guide p{max-width:66ch;margin:0 0 12px}
+.guide h3{font-size:17px;margin:18px 0 4px}
+.foot{margin-top:40px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="site">축의금 계산기</p>
+  <h1>축의금,<br>얼마 내야 할까?</h1>
+  <p class="lead">관계, 참석 여부, 함께 가는 사람, 식장을 고르면 적정 금액과 그렇게 정한 이유를 알려드려요.</p>
+
+  <div class="q"><h2>어떤 사이인가요?</h2><div class="chips" id="rel"></div></div>
+  <div class="q"><h2>결혼식에 가나요?</h2><div class="chips" id="att"></div></div>
+  <div class="q" id="qComp"><h2>함께 가는 사람<small>나 말고 식사하는 사람 수</small></h2><div class="chips" id="comp"></div></div>
+  <div class="q" id="qHall"><h2>식장은 어디인가요?</h2><div class="chips" id="hall"></div></div>
+  <div class="q"><h2>내 나이대</h2><div class="chips" id="age"></div></div>
+  <div class="q"><h2>상대에게 축의금을 받은 적 있나요?<small>없으면 비워 두세요</small></h2>
+    <div class="row"><input type="number" id="recv" min="0" step="1" inputmode="numeric" placeholder="예: 10"><span>만 원</span></div></div>
+  <div class="q"><label class="chk"><input type="checkbox" id="law"> <span>신랑·신부가 <b>내 일과 관련된</b> 공무원·선생님·기자예요<br><span style="color:var(--muted);font-size:14px">예: 우리 회사 허가를 담당하는 공무원, 우리 아이 담임 선생님. 그냥 친구나 지인이면 체크하지 마세요.</span></span></label></div>
+
+  <div class="result" id="result" aria-live="polite"></div>
+
+  <section>
+    <h2>다른 사람들은 얼마 낼까</h2>
+    <div class="stats">
+      <div class="stat"><b>9만 원</b><p>송금 봉투로 보낸 축의금 평균. 20대 6만 원, 30~40대 10만 원, 50~60대 12만 원</p><small>카카오페이 송금 봉투 분석, 2024년 9월 기준</small></div>
+      <div class="stat"><b>58%</b><p>적정 축의금으로 10만 원을 고른 사람의 비율. 모든 연령대에서 가장 많았어요</p><small>카카오페이 투표 7만여 명, 2024년 11월</small></div>
+      <div class="stat"><b>13만 원 / 29만 원</b><p>친구 결혼식에 직접 갈 때 적정 금액. 미혼 평균과 기혼 평균</p><small>결혼정보회사 가연 조사, 2026년 8월</small></div>
+      <div class="stat"><b>8만 원 / 17만 원</b><p>지인 결혼식 평균과 친한 사이 평균</p><small>KB국민카드 조사, 2023년</small></div>
+    </div>
+  </section>
+
+  <section class="guide">
+    <h2>축의금 정할 때 기준</h2>
+    <h3>1. 관계가 가장 중요해요</h3>
+    <p>여러 조사에서 금액을 정하는 첫 번째 기준은 친분이었어요. 얼마나 자주 보고, 앞으로도 볼 사이인지가 금액을 가장 크게 좌우합니다.</p>
+    <h3>2. 참석한다면 식대를 생각하세요</h3>
+    <p>식장에서 식사를 한다면 적어도 내 식대보다는 많이 내는 것이 예의로 여겨져요. 동반자가 있거나 호텔처럼 식대가 비싼 곳이면 금액을 올리는 사람이 많습니다. 부담된다면 참석하지 않고 축의금만 보내는 것도 방법이에요.</p>
+    <h3>3. 받은 만큼은 돌려주세요</h3>
+    <p>기혼자 상당수가 상대가 예전에 낸 금액을 기준으로 삼는다고 답했어요. 받은 금액보다 적게 내면 서운해할 수 있으니, 받은 적이 있다면 그 금액 이상을 기본으로 생각하세요.</p>
+    <h3>4. 3·5·7처럼 홀수 금액을 많이 써요</h3>
+    <p>축의금은 3만, 5만 원처럼 홀수로 맞추는 관습이 있고, 10만 원 이상은 10만, 15만, 20만 원처럼 딱 떨어지는 금액을 주로 냅니다.</p>
+    <p>봉투에 쓸 글귀나 축하 메시지가 고민이라면 문구 생성기를 써보세요.<br>
+      <a href="https://shxoddl3.github.io/hanmadi/#envelope" target="_blank" rel="noopener" style="font-weight:700;color:var(--accent)">봉투 문구 보기</a> · <a href="https://shxoddl3.github.io/hanmadi/#wedding" target="_blank" rel="noopener" style="font-weight:700;color:var(--accent)">결혼 축하 문구 보기</a></p>
+  </section>
+  <p class="foot">추천 금액은 여러 조사와 일반적인 관례를 바탕으로 한 참고용이에요. 지역, 집안 분위기, 두 사람의 관계에 따라 얼마든지 달라질 수 있습니다.</p>
+</div>
+
+<script>
+const TIERS = [3,5,10,15,20,30,50,70,100];
+const REL = {
+  family:   { t:"가까운 가족·친척", base:30, why:"형제·사촌처럼 가까운 가족은 30만 원 이상 내는 경우가 많아요. 다만 집안마다 차이가 커서 가족끼리 미리 맞추는 게 가장 좋아요." },
+  relative: { t:"자주 안 보는 친척", base:10, why:"명절에나 보는 친척이라면 10만 원 선이 무난해요." },
+  bestie:   { t:"아주 친한 친구", base:20, why:"가장 친한 친구는 보통 10만 원을 넘겨요. 친한 사이 평균이 17만 원이라는 조사도 있어서 20만 원 안팎이 자연스러워요." },
+  friend:   { t:"친구·동창", base:10, why:"꾸준히 연락하는 친구라면 10만 원이 가장 흔해요. 적정 금액으로 10만 원을 고른 사람이 가장 많았어요." },
+  close:    { t:"가까운 직장 동료", base:15, why:"업무 얘기 말고도 편하게 이야기하고, 퇴근 후에도 만날 만큼 친한 동료라면 10만 원보다 조금 더 내는 경우가 많아요." },
+  cowork:   { t:"일반 직장 동료", base:10, why:"같은 팀이나 부서 동료라면 10만 원이 기본이에요. 식장에서 식사를 하면 5만 원은 식대보다 적을 수 있어요." },
+  boss:     { t:"직장 상사·선배", base:10, why:"상사나 선배라고 더 낼 필요는 없어요. 친분에 맞춰 10만 원이 무난해요." },
+  client:   { t:"거래처·업무 관계", base:10, why:"업무로 알게 된 사이라면 10만 원이 일반적이에요." },
+  acq:      { t:"얼굴만 아는 사이", base:5, why:"청첩장만 받은 정도라면 참석보다는 5만 원을 보내는 경우가 많아요." }
+};
+const S = { rel:"friend", att:"yes", comp:0, hall:"normal", age:"mid" };
+const OPTS = {
+  att:[["yes","갈 거예요"],["no","못 가고 축의금만 보내요"]],
+  comp:[[0,"혼자"],[1,"1명"],[2,"2명"],[3,"3명"]],
+  hall:[["normal","일반 웨딩홀"],["hotel","호텔·고급 예식장"],["small","스몰웨딩·식사 없음"]],
+  age:[["young","20대"],["mid","30~40대"],["old","50대 이상"]]
+};
+const $ = id => document.getElementById(id);
+const idx = v => { let i = TIERS.findIndex(t => t >= v); return i < 0 ? TIERS.length - 1 : i; };
+const up = v => TIERS[idx(v)];
+const near = v => TIERS.reduce((a, t) => Math.abs(t - v) < Math.abs(a - v) || (Math.abs(t - v) === Math.abs(a - v) && t > a) ? t : a, TIERS[0]);
+const step = (v, d) => TIERS[Math.max(0, Math.min(TIERS.length - 1, idx(v) + d))];
+
+function chips(id, list, key){
+  $(id).innerHTML = list.map(([v, t]) => `<button type="button" class="chip" data-k="${key}" data-v="${v}" aria-pressed="${String(S[key]) === String(v)}">${t}</button>`).join("");
+}
+function drawAll(){
+  chips("rel", Object.entries(REL).map(([k, v]) => [k, v.t]), "rel");
+  chips("att", OPTS.att, "att"); chips("comp", OPTS.comp, "comp"); chips("hall", OPTS.hall, "hall"); chips("age", OPTS.age, "age");
+  $("qComp").hidden = S.att !== "yes";
+  $("qHall").hidden = S.att !== "yes";
+}
+
+function calc(){
+  const r = REL[S.rel], reasons = [];
+  let amt = r.base, attend = S.att === "yes";
+  reasons.push({ h:`${r.t}: 기본 ${r.base}만 원`, d:r.why });
+
+  if (!attend) {
+    const a = S.rel === "acq" ? r.base : step(r.base, -1);
+    if (a !== amt) reasons.push({ h:`참석하지 않아 ${a}만 원으로`, d:"식사를 하지 않으니 참석할 때보다 한 단계 낮게 내는 경우가 많아요." });
+    amt = Math.max(5, a);
+  } else {
+    if (S.rel === "acq") reasons.push({ h:"참석한다면 10만 원 이상 권장", d:"얼굴만 아는 사이라도 식사를 한다면 식대를 생각해 10만 원 이상이 안전해요. 부담된다면 참석하지 않고 5만 원을 보내는 쪽이 더 자연스러워요." });
+    if (S.rel === "acq") amt = 10;
+    if (S.hall === "hotel") { const a = near(amt + 5); reasons.push({ h:`호텔 예식이라 ${a}만 원으로`, d:"호텔이나 고급 예식장은 식대가 높아서 5만 원 정도 더 얹는 사람이 많아요." }); amt = a; }
+    if (S.hall === "small") reasons.push({ h:"식사가 없다면 기본 금액 그대로", d:"스몰웨딩이나 식사가 없는 예식은 식대 부담이 없으니 관계에 맞춘 금액이면 충분해요." });
+    if (+S.comp > 0) {
+      const per = S.hall === "small" ? 0 : 5;
+      if (per) { const a = near(amt + per * S.comp); reasons.push({ h:`동반 ${S.comp}명이라 ${a}만 원으로`, d:`함께 식사하는 사람 1명당 5만 원 이상 더하는 게 일반적이에요. 호텔처럼 식대가 비싼 곳이면 1명당 10만 원을 더하기도 해요. 조사에서도 동반자가 있으면 더 낸다는 사람이 대부분이었어요. 아이는 식사를 하면 반 명 정도로 생각하세요.` }); amt = a; }
+    }
+  }
+  if (S.age === "young" && amt >= 15 && !["family"].includes(S.rel)) {
+    const a = step(amt, -1);
+    reasons.push({ h:`사회초년생이라 ${a}만 원도 괜찮아요`, d:"20대 평균 축의금은 6만 원으로 다른 연령대보다 낮아요. 무리하지 않는 선에서 한 단계 낮춰도 충분해요." });
+    amt = a;
+  }
+  if (S.age === "old" && ["family","relative"].includes(S.rel)) {
+    const a = step(amt, 1);
+    reasons.push({ h:`50대 이상이라 ${a}만 원으로`, d:"연령대가 올라갈수록 평균 축의금이 높아져요. 50~60대 평균은 12만 원이에요. 특히 친척 사이에서는 한 단계 더 내는 경우가 많아요." });
+    amt = a;
+  }
+  const recv = +$("recv").value || 0;
+  if (recv > 0) {
+    const need = up(recv);
+    if (need > amt) { reasons.push({ h:`받은 만큼 ${need}만 원으로`, d:"예전에 받은 금액보다 적게 내면 서운해할 수 있어요. 기혼자 상당수가 상대가 냈던 금액을 기준으로 삼는다고 답했어요." }); amt = need; }
+    else reasons.push({ h:`받은 금액 ${recv}만 원 이상이에요`, d:"추천 금액이 예전에 받은 금액보다 크거나 같아서 그대로 두었어요." });
+  }
+  let capNote = "";
+  if ($("law").checked && amt > 5) {
+    reasons.push({ h:"일로 엮인 사이라 5만 원까지만", d:"신랑·신부가 내 일을 맡은 공무원이나 아이 담임 선생님처럼 일로 엮인 사이라면, 법(청탁금지법)상 5만 원까지만 줄 수 있어요. 화환도 같이 보내면 합쳐서 10만 원까지예요. 그냥 친구라면 공무원이어도 상관없어요." });
+    amt = 5; capNote = "cap";
+  }
+  const lo = capNote ? null : step(amt, -1), hi = capNote ? null : step(amt, 1);
+  return { amt, reasons, lo, hi, attend };
+}
+
+function render(){
+  drawAll();
+  const r = calc(), rel = REL[S.rel];
+  const floor = r.attend && S.hall !== "small" ? 10 : (S.rel === "acq" ? 3 : 5);
+  const lo = r.lo && r.lo >= floor && r.lo < r.amt ? r.lo : null;
+  $("result").innerHTML = `
+    <p class="for">${rel.t} 결혼식${r.attend ? ", 직접 참석" : ", 축의금만 송금"}</p>
+    <p class="amt">${r.amt}만 원</p>
+    ${r.lo || r.hi ? `<p class="alt">${lo ? `부담된다면 ${lo}만 원, ` : ""}${r.hi ? `더 챙기고 싶다면 ${r.hi}만 원` : ""}</p>` : ""}
+    <div class="why"><h3>이렇게 계산했어요</h3><ol>${r.reasons.map(x => `<li><b>${x.h}</b><span>${x.d}</span></li>`).join("")}</ol></div>
+    ${S.rel === "family" ? `<p class="warn">가족·친척 축의금은 집안마다 기준이 크게 달라요. 부모님이나 다른 형제와 금액을 먼저 맞춰 보세요.</p>` : ""}
+    <div class="links"><a href="https://shxoddl3.github.io/hanmadi/#envelope" target="_blank" rel="noopener">봉투에 쓸 글귀 보기</a><a href="https://shxoddl3.github.io/hanmadi/#wedding" target="_blank" rel="noopener">축하 메시지 보기</a></div>`;
+}
+
+document.addEventListener("click", e => {
+  const c = e.target.closest(".chip"); if (!c) return;
+  const k = c.dataset.k; S[k] = k === "comp" ? +c.dataset.v : c.dataset.v; render();
+});
+$("recv").addEventListener("input", render);
+$("law").addEventListener("change", render);
+render();
+</script>
+</body>
+</html>
